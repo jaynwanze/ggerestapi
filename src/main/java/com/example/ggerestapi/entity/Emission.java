@@ -1,16 +1,19 @@
 package com.example.ggerestapi.entity;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+@JacksonXmlRootElement(localName = "emmision")
 @Entity
 public class Emission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     private String category;
     private String categoryDescription;
     private String scenario;
