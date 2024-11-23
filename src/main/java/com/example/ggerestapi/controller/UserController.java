@@ -22,11 +22,6 @@ public class UserController {
         return userRepository.findById(id).orElse(null);
     }
 
-    @PostMapping(value = "/users", consumes = "application/json", produces = "application/json")
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
-    }
-
     @PutMapping(value = "/users/{id}", consumes = "application/json", produces = "application/json")
     public User updateUser(@PathVariable long id, @RequestBody User user) {
         User existingUser = userRepository.findById(id).orElse(null);

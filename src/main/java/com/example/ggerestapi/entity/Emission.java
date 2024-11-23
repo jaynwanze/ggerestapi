@@ -22,7 +22,7 @@ public class Emission {
     private String nk;
     private float value; 
     private float predictedValue; 
-    private String  country;
+    private String country;
 
     public Emission() {
     }
