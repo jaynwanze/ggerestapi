@@ -19,24 +19,24 @@ public class Emission {
     private String scenario;
     private int year;
     private String gasUnits;
-    private String gas;
     private String nk;
-    private double value; 
-    private Double predictedValue; 
+    private float value; 
+    private float predictedValue; 
+    private String  country;
 
     public Emission() {
     }
 
-    public Emission(String category, String categoryDescription, String scenario, int year, String gasUnits, String gas, String nk, double value, Double predictedValue) {
+    public Emission(String category, String categoryDescription, String scenario, int year, String gasUnits, String nk, float value, float predictedValue, String country) {
         this.category = category;
         this.categoryDescription = categoryDescription;
         this.scenario = scenario;
         this.year = year;
         this.gasUnits = gasUnits;
-        this.gas = gas;
         this.nk = nk;
         this.value = value;
         this.predictedValue = predictedValue;
+        this.country = country;
     }
 
     public Long getId() {
@@ -87,14 +87,6 @@ public class Emission {
         this.gasUnits = gasUnits;
     }
 
-    public String getGas() {
-        return gas;
-    }
-
-    public void setGas(String gas) {
-        this.gas = gas;
-    }
-
     public String getNk() {
         return nk;
     }
@@ -103,36 +95,43 @@ public class Emission {
         this.nk = nk;
     }
 
-    public double getValue() {
+    public float getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(float value) {
         this.value = value;
     }
 
-    public Double getPredictedValue() {
+    public float getPredictedValue() {
         return predictedValue;
     }
 
-    public void setPredictedValue(Double predictedValue) {
+    public void setPredictedValue(float predictedValue) {
         this.predictedValue = predictedValue;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
     
 
     @Override
     public String toString() {
         return "Emission{" +
-                "id=" + id +
                 ", category='" + category + '\'' +
                 ", categoryDescription='" + categoryDescription + '\'' +
                 ", scenario='" + scenario + '\'' +
                 ", year=" + year +
                 ", gasUnits='" + gasUnits + '\'' +
-                ", gas='" + gas + '\'' +
                 ", nk='" + nk + '\'' +
                 ", value=" + value +
                 ", predictedValue=" + predictedValue +
+                ", country='" + country + '\'' +
                 '}';
     }
 }
