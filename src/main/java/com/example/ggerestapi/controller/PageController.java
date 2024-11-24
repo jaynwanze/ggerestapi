@@ -9,11 +9,11 @@ public class PageController {
 
     @GetMapping("/login")
     public String loginPage() {
-        return "login.html"; // Renders src/main/resources/templates/login.html
+        return "login";
     }
 
     @GetMapping("/register")
     public String registerPage() {
-        return "register"; // Renders src/main/resources/templates/register.html
+        return "register";
     }
 }
