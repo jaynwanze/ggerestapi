@@ -28,35 +28,32 @@ import com.example.ggerestapi.repository.EmissionRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EmissionParser {
 
-    @Autowired
-    private EmissionRepository emissionRepository;
+    public static List<Emission> parseEmissions() {
 
-    public static void main(String[] args) {
-        /*
-         * ArrayList<Emission> emissions = parseXml();
-         * ArrayList<HashMap<String, String>> categoriesJson = parseJson();
-         * 
-         * for (Emission emission : emissions) {
-         * for (HashMap<String, String> category : categoriesJson) {
-         * if (category.containsKey(emission.getCategory())) {
-         * float value = Float.parseFloat(category.get(emission.getCategory()));
-         * emission.setValue(value);
-         * }
-         * }
-         * System.out.println(emission.toString());
-         * }
-         * 
-         * System.out.println("Emissions Size: " + emissions.size());
-         */
-        htmlParser("4.A - Solid Waste Disposal");
+        ArrayList<Emission> emissions = parseXml();
+        ArrayList<HashMap<String, String>> categoriesJson = parseJson();
+
+        for (Emission emission : emissions) {
+            for (HashMap<String, String> category : categoriesJson) {
+                if (category.containsKey(emission.getCategory())) {
+                    float value = Float.parseFloat(category.get(emission.getCategory()));
+                    emission.setValue(value);
+                }
+            }
+            System.out.println(emission.toString());
+        }
+
+        System.out.println("Emissions Size: " + emissions.size());
+        return emissions;
+
+        // htmlParser("4.A - Solid Waste Disposal");
     }
 
-    public static ArrayList<HashMap<String, String>> parseJson() {
+    private static ArrayList<HashMap<String, String>> parseJson() {
         ArrayList<HashMap<String, String>> jsonEmissions = new ArrayList<>();
         try {
             // Read JSON file
@@ -84,7 +81,7 @@ public class EmissionParser {
         return jsonEmissions;
     }
 
-    public static ArrayList<Emission> parseXml() {
+    private static ArrayList<Emission> parseXml() {
         ArrayList<Emission> categories = new ArrayList<>();
         File xmlFile = new File("src/main/resources/xml/MMR_IRArticle23T1_IE_2016v2.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -164,7 +161,7 @@ public class EmissionParser {
         return categories;
     }
 
-    public static String htmlParser(String category) {
+    private static String htmlParser(String category) {
         String description = null;
         try {
             org.jsoup.nodes.Document doc = Jsoup.connect("https://www.ipcc-nggip.iges.or.jp/EFDB/find_ef.php").get();
@@ -224,9 +221,5 @@ public class EmissionParser {
     private static String getElementValue(Element elem, String tagName) {
         Node node = elem.getElementsByTagName(tagName).item(0);
         return node.getTextContent().trim();
-    }
-
-    public void saveEmissions(List<Emission> emissions) {
-        emissionRepository.saveAll(emissions);
     }
 }

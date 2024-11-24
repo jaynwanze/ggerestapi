@@ -6,7 +6,7 @@ import com.example.ggerestapi.entity.User;
 import com.example.ggerestapi.repository.UserRepository;
 import java.util.List;
 
-@RequestMapping("/emissionsservice")
+@RequestMapping("/api")
 @RestController
 public class UserController {
     @Autowired
