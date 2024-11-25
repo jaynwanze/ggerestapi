@@ -10,13 +10,12 @@
     <div class=" card container mt-5 text-center">
         <h4 class="card-title mt-3">Emissions Management</h4>
         <h2 class="mb-4">GreenHouse Gas Emissions Data Ireland</h2>
-
         <div class="mb-4">
             <form th:action="@{/api/emissions/populate}" method="post">
                 <button type="submit" class="btn btn-primary">Populate Database</button>
             </form>
         </div>
-        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
         <div class="mb-4">
             <label for="filterCategory" class="form-label">Filter by Category:</label>
             <select id="filterCategory" class="form-select" onchange="filterEmissions()">
@@ -25,35 +24,54 @@
             </select>
         </div>
 
-        <div class="card mb-4">
+        <div id="addNewEmissionCard" class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Add New Emission</h5>
-                <form th:action="@{/api/emissions}" method="post">
-                    <div class="row mb-3">
-                        <div class="col">
+                <div class="row mb-3">
+                    <h5 class="card-title">Add New Emission</h5>
+                    <button id="addNewEmissionTab" class="btn btn-secondary"
+                        onclick="handleNewEmissionsTabClicked()">Open</button>
+                </div>
+                <div id="addNewEmissionContent" style="display: none;">
+                    <form th:action="@{/api/emissions}" method="post">
+                        <div class="row mb-3">
                             <input type="text" class="form-control" name="category" placeholder="Category" required>
                         </div>
-                        <div class="col">
+                        <div class="row mb-3">
                             <input type="text" class="form-control" name="categoryDescription"
                                 placeholder="Category Description" required>
                         </div>
-                        <div class="col">
+                        <div class="row mb-3">
+                            <input type="number" class="form-control" name="year" placeholder="Year" required>
+                        </div>
+                        <div class="row mb-3">
                             <input type="number" step="0.01" class="form-control" name="value" placeholder="Value"
                                 required>
                         </div>
-                        <div class="col">
-                            <input type="number" class="form-control" name="year" placeholder="Year" required>
+                        <div class="row mb-3">
+                            <input type="number" step="0.01" class="form-control" name="predictedValue"
+                                placeholder="Predicted Value" required>
                         </div>
-                        <div class="col">
-                            <button type="submit" class="btn btn-primary">Add</button>
+                        <div class="row mb-3">
+                            <input type="text" class="form-control" name="scenario" placeholder="Scenario" required>
                         </div>
-                    </div>
-                </form>
+                        <div class="row mb-3">
+                            <input type="text" class="form-control" name="gasUnits" placeholder="Gas Units" required>
+                        </div>
+                        <div class="row mb-3">
+                            <input type="text" class="form-control" name="nk" placeholder="NK">
+                        </div>
+                        <div class="row mb-3">
+                            <button type="submit" class="btn btn-info">Add</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
         <div class="mb-4">
             <h4 class="red" th:if="${#lists.isEmpty(emissions)}">No Emissions Found!</h4>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}" id="successMessage"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}" id="errorMessage"></div>
         </div>
         <table th:if="${!#lists.isEmpty(emissions)}" class="table table-bordered">
             <thead>
@@ -67,11 +85,12 @@
                     <th>NK</th>
                     <th>Scenario</th>
                     <th>Year</th>
+                    <th>Country</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="emissionsTable">
-                <tr th:each="emission : ${emissions}" th:data-category="${emission.category}">
+                <tr th:each="emission: ${emissions}" th:data-category="${emission.category}">
                     <td th:text="${emission.id}"></td>
                     <td th:text="${emission.category}"></td>
                     <td th:text="${emission.categoryDescription}"></td>
@@ -81,10 +100,10 @@
                     <td th:text="${emission.nk}"></td>
                     <td th:text="${emission.scenario}"></td>
                     <td th:text="${emission.year}"></td>
+                    <td th:text="${emission.country}"></td>
                     <td>
-                        <form class="mb-3" th:action="@{/api/emissions/{id}(id=${emission.id})}" method="post">
-                            <input type="hidden" name="_method" value="put" />
-                            <button type="submit" class="btn btn-warning btn-sm">Update</button>
+                        <form class="mb-3" th:action="@{/update-emission/{id}(id=${emission.id})}" method="get">
+                            <button type="submit" class="btn btn-info btn-sm">Update</button>
                         </form>
                         <form th:action="@{/api/emissions/{id}(id=${emission.id})}" method="post">
                             <input type="hidden" name="_method" value="delete" />
@@ -104,6 +123,29 @@
                 const category = row.getAttribute('data-category').toLowerCase();
                 row.style.display = category.includes(filter) || filter === '' ? '' : 'none';
             });
+        }
+        window.onload = function () {
+            setTimeout(function () {
+                const successMessage = document.getElementById('successMessage');
+                const errorMessage = document.getElementById('errorMessage');
+                if (successMessage) {
+                    successMessage.style.display = 'none';
+                }
+                if (errorMessage) {
+                    errorMessage.style.display = 'none';
+                }
+            }, 3000);
+        };
+
+        function handleNewEmissionsTabClicked() {
+            const addNewEmissionCard = document.getElementById('addNewEmissionContent');
+            const addNewEmissionTab = document.getElementById('addNewEmissionTab');
+            addNewEmissionCard.style.display = addNewEmissionCard.style.display === 'none' ? '' : 'none';
+            addNewEmissionTab.textContent = addNewEmissionCard.style.display === 'none' ? 'Open' : 'Close';
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>

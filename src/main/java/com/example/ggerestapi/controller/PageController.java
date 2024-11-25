@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.ggerestapi.entity.Emission;
 import com.example.ggerestapi.entity.User;
@@ -40,28 +43,30 @@ public class PageController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboardPage(Model model, HttpSession session) {
+    public String dashboardPage(RedirectAttributes redirectAttributes, HttpSession session) {
         User authenticatedUser = (User) session.getAttribute("authenticatedUser");
         if (authenticatedUser == null) {
+            redirectAttributes.addFlashAttribute("error", "Logged out of session.");
             return "redirect:/login";
         }
         return "dashboard";
     }
 
     @GetMapping("/profile")
-    public String profilePage(Model model, HttpSession session) {
+    public String profilePage(HttpSession session, RedirectAttributes redirectAttributes) {
         User authenticatedUser = (User) session.getAttribute("authenticatedUser");
         if (authenticatedUser == null) {
+            redirectAttributes.addFlashAttribute("error", "Logged out of session.");
             return "redirect:/login";
         }
-        model.addAttribute("user", authenticatedUser);
         return "profile";
     }
 
     @GetMapping("/emissions")
-    public String emissionsPage(Model model, HttpSession session) {
+    public String emissionsPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         User authenticatedUser = (User) session.getAttribute("authenticatedUser");
         if (authenticatedUser == null) {
+            redirectAttributes.addFlashAttribute("error", "Logged out of session.");
             return "redirect:/login";
         }
 
@@ -70,5 +75,25 @@ public class PageController {
         model.addAttribute("emissions", emissions);
         model.addAttribute("categories", categories);
         return "emissions";
+    }
+
+    @GetMapping("/update-emission/{id}")
+    public String updateEmissionPage(Model model, HttpSession session, @PathVariable Long id,
+            RedirectAttributes redirect) {
+        User authenticatedUser = (User) session.getAttribute("authenticatedUser");
+        if (authenticatedUser == null) {
+            return "redirect:/login";
+        }
+        if (id == null) {
+            redirect.addFlashAttribute("error", "id parameter is required.");
+            return "redirect:/emissions";
+        }
+        Emission emission = emissionRepository.findById(id).orElse(null);
+        if (emission == null) {
+            redirect.addFlashAttribute("error", "Emission to edit not found.");
+            return "redirect:/emissions";
+        }
+        model.addAttribute("emission", emission);
+        return "update-emission";
     }
 }
