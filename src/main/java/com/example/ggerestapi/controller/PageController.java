@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.ggerestapi.entity.Emission;
 import com.example.ggerestapi.entity.User;
 import com.example.ggerestapi.repository.EmissionRepository;
+import com.example.ggerestapi.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -20,6 +21,9 @@ import jakarta.servlet.http.HttpSession;
 public class PageController {
     @Autowired
     private EmissionRepository emissionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/login")
     public String loginPage() {
@@ -33,7 +37,7 @@ public class PageController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate(); // Clear the session
+        session.invalidate();
         return "redirect:/login";
     }
 
@@ -53,14 +57,18 @@ public class PageController {
     }
 
     @GetMapping("/profile")
-    public String profilePage(HttpSession session, RedirectAttributes redirectAttributes) {
+    public String profilePage(HttpSession session, RedirectAttributes redirectAttributes, Model model) {
         User authenticatedUser = (User) session.getAttribute("authenticatedUser");
         if (authenticatedUser == null) {
-            redirectAttributes.addFlashAttribute("error", "Logged out of session.");
+            redirectAttributes.addFlashAttribute("error", "You have been logged out of your session.");
             return "redirect:/login";
         }
+        model.addAttribute("authenticatedUser", authenticatedUser);
+        List<User> users = userRepository.findAll();
+        model.addAttribute("users", users);
         return "profile";
     }
+    
 
     @GetMapping("/emissions")
     public String emissionsPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {

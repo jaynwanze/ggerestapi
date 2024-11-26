@@ -23,11 +23,28 @@
                 <form th:action="@{/register}" method="get">
                     <button type="submit">Register Page</button>
                 </form>
-                <p th:if="${error}" th:text="${error}"></p>
+                <div class="mb-3 mt-3" `>
+                    <div th:if="${success}" class="alert alert-success" th:text="${success}" id="successMessage" />
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}" id="errorMessage" />
+                </div>
             </div>
         </div>
     </div>
-
 </body>
 
+
 </html>
+<script>
+    window.onload = function () {
+        setTimeout(function () {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }, 3000);
+    };
+</script>

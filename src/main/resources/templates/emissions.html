@@ -7,63 +7,70 @@
 </head>
 
 <body>
-    <div class=" card container mt-5 text-center">
+    <div class=" w-50 card container mt-5 align-items-center text-center">
         <h4 class="card-title mt-3">Emissions Management</h4>
-        <h2 class="mb-4">GreenHouse Gas Emissions Data Ireland</h2>
-        <div class="mb-4">
-            <form th:action="@{/api/emissions/populate}" method="post">
-                <button type="submit" class="btn btn-primary">Populate Database</button>
-            </form>
+        <h2 class="mb-4">Greenhouse Gas Emissions Data Ireland</h2>
+        <div class="row align-items-center">
+            <div class="col">
+                <form th:action="@{/api/emissions/populate}" method="post">
+                    <button type="submit" class="btn btn-primary">Populate Database</button>
+                </form>
+            </div>
+
+            <div class="col">
+                <label for="filterCategory" class="form-label">Filter by Category:</label>
+                <select id="filterCategory" class="form-select" onchange="filterEmissions()">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+                </select>
+            </div>
+
         </div>
 
-        <div class="mb-4">
-            <label for="filterCategory" class="form-label">Filter by Category:</label>
-            <select id="filterCategory" class="form-select" onchange="filterEmissions()">
-                <option value="">All Categories</option>
-                <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
-            </select>
-        </div>
 
-        <div id="addNewEmissionCard" class="card mb-4">
-            <div class="card-body">
-                <div class="row mb-3">
-                    <h5 class="card-title">Add New Emission</h5>
-                    <button id="addNewEmissionTab" class="btn btn-secondary"
-                        onclick="handleNewEmissionsTabClicked()">Open</button>
-                </div>
-                <div id="addNewEmissionContent" style="display: none;">
-                    <form th:action="@{/api/emissions}" method="post">
-                        <div class="row mb-3">
-                            <input type="text" class="form-control" name="category" placeholder="Category" required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="text" class="form-control" name="categoryDescription"
-                                placeholder="Category Description" required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="number" class="form-control" name="year" placeholder="Year" required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="number" step="0.01" class="form-control" name="value" placeholder="Value"
-                                required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="number" step="0.01" class="form-control" name="predictedValue"
-                                placeholder="Predicted Value" required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="text" class="form-control" name="scenario" placeholder="Scenario" required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="text" class="form-control" name="gasUnits" placeholder="Gas Units" required>
-                        </div>
-                        <div class="row mb-3">
-                            <input type="text" class="form-control" name="nk" placeholder="NK">
-                        </div>
-                        <div class="row mb-3">
-                            <button type="submit" class="btn btn-info">Add</button>
-                        </div>
-                    </form>
+        <div class=" w-50 card container mt-5 mb-3 align-items-center text-center">
+            <div id="addNewEmissionCard" class=" mb-4">
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <h5 class="card-title">Add New Emission</h5>
+                        <button id="addNewEmissionTab" class="btn btn-secondary btn-dark"
+                            onclick="handleNewEmissionsTabClicked()">Open</button>
+                    </div>
+                    <div id="addNewEmissionContent" style="display: none;">
+                        <form th:action="@{/api/emissions}" method="post">
+                            <div class="row mb-3">
+                                <input type="text" class="form-control" name="category" placeholder="Category" required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="text" class="form-control" name="categoryDescription"
+                                    placeholder="Category Description" required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="number" class="form-control" name="year" placeholder="Year" required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="number" step="0.01" class="form-control" name="value" placeholder="Value"
+                                    required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="number" step="0.01" class="form-control" name="predictedValue"
+                                    placeholder="Predicted Value" required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="text" class="form-control" name="scenario" placeholder="Scenario" required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="text" class="form-control" name="gasUnits" placeholder="Gas Units"
+                                    required>
+                            </div>
+                            <div class="row mb-3">
+                                <input type="text" class="form-control" name="nk" placeholder="NK">
+                            </div>
+                            <div class="row mb-3">
+                                <button type="submit" class="btn btn-info">Add</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -73,47 +80,48 @@
             <div th:if="${success}" class="alert alert-success" th:text="${success}" id="successMessage"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}" id="errorMessage"></div>
         </div>
-        <table th:if="${!#lists.isEmpty(emissions)}" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Gas Units</th>
-                    <th>Value</th>
-                    <th>Predicted Value</th>
-                    <th>NK</th>
-                    <th>Scenario</th>
-                    <th>Year</th>
-                    <th>Country</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="emissionsTable">
-                <tr th:each="emission: ${emissions}" th:data-category="${emission.category}">
-                    <td th:text="${emission.id}"></td>
-                    <td th:text="${emission.category}"></td>
-                    <td th:text="${emission.categoryDescription}"></td>
-                    <td th:text="${emission.gasUnits}"></td>
-                    <td th:text="${emission.value}"></td>
-                    <td th:text="${emission.predictedValue}"></td>
-                    <td th:text="${emission.nk}"></td>
-                    <td th:text="${emission.scenario}"></td>
-                    <td th:text="${emission.year}"></td>
-                    <td th:text="${emission.country}"></td>
-                    <td>
-                        <form class="mb-3" th:action="@{/update-emission/{id}(id=${emission.id})}" method="get">
-                            <button type="submit" class="btn btn-info btn-sm">Update</button>
-                        </form>
-                        <form th:action="@{/api/emissions/{id}(id=${emission.id})}" method="post">
-                            <input type="hidden" name="_method" value="delete" />
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
+    <table th:if="${!#lists.isEmpty(emissions)}"
+        class="table table-bordered  w-75  container mt-5 align-items-center text-center">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Gas Units</th>
+                <th>Value</th>
+                <th>Predicted Value</th>
+                <th>NK</th>
+                <th>Scenario</th>
+                <th>Year</th>
+                <th>Country</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="emissionsTable">
+            <tr th:each="emission: ${emissions}" th:data-category="${emission.category}">
+                <td th:text="${emission.id}"></td>
+                <td th:text="${emission.category}"></td>
+                <td th:text="${emission.categoryDescription}"></td>
+                <td th:text="${emission.gasUnits}"></td>
+                <td th:text="${emission.value}"></td>
+                <td th:text="${emission.predictedValue}"></td>
+                <td th:text="${emission.nk}"></td>
+                <td th:text="${emission.scenario}"></td>
+                <td th:text="${emission.year}"></td>
+                <td th:text="${emission.country}"></td>
+                <td>
+                    <form class="mb-3" th:action="@{/update-emission/{id}(id=${emission.id})}" method="get">
+                        <button type="submit" class="btn btn-info btn-sm">Update</button>
+                    </form>
+                    <form th:action="@{/api/emissions/{id}(id=${emission.id})}" method="post">
+                        <input type="hidden" name="_method" value="delete" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     <script>
         function filterEmissions() {
@@ -142,10 +150,8 @@
             const addNewEmissionTab = document.getElementById('addNewEmissionTab');
             addNewEmissionCard.style.display = addNewEmissionCard.style.display === 'none' ? '' : 'none';
             addNewEmissionTab.textContent = addNewEmissionCard.style.display === 'none' ? 'Open' : 'Close';
-        }
+            addNewEmissionTab.classList = addNewEmissionCard.style.display === 'none' ? 'btn btn-secondary btn-dark' : 'btn btn-secondary btn-danger';
 
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>

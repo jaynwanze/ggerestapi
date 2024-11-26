@@ -7,20 +7,27 @@
 </head>
 
 <body>
-    <div class="container mt-5 text-center">
-
+    <div class="container mt-5 text-center w-50">
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Welcome, <span th:text="${session.authenticatedUser.name}"></span> to the
                     Dashboard</h5>
                 <h2>Green House Gas Emissions Service</h2>
-                <a th:href="@{/emissions}">View Greenhouse Gas Emissions Data Ireland</a>
-                <br><br>
-                <a th:href="@{/profile}">View User Profile</a>
-                <br><br>
-                <form th:action="@{/logout}">
-                    <button type="submit">Logout</button>
-                </form>
+                <div class="mb-4">
+                    <form th:action="@{/emissions}" method="get">
+                        <button type="submit" class="btn btn-primary">View Emissions</button>
+                    </form>
+                </div>
+                <div class="mb-4">
+                    <form th:action="@{/profile}" method="get">
+                        <button type="submit" class="btn btn-primary">View User Profile</button>
+                    </form>
+                </div>
+                <div class="mb-4">
+                    <form th:action="@{/logout}">
+                        <button type="submit">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
