@@ -35,13 +35,17 @@ public class EmissionParser {
     public static List<Emission> parseEmissions() {
 
         ArrayList<Emission> emissions = parseXml();
-        ArrayList<HashMap<String, String>> categoriesJson = parseJson();
+        ArrayList<HashMap<String, List<String>>> categoriesJson = parseJson();
 
         for (Emission emission : emissions) {
-            for (HashMap<String, String> category : categoriesJson) {
+            for (HashMap<String, List<String>> category : categoriesJson) {
                 if (category.containsKey(emission.getCategory())) {
-                    float value = Float.parseFloat(category.get(emission.getCategory()));
-                    emission.setValue(value);
+                    List<String> categoryMap = category.get(emission.getCategory());
+                    String gasUnit = categoryMap.get(1);
+                    if (gasUnit.equals(emission.getGasUnits())) {
+                        Float value = Float.parseFloat(categoryMap.get(0));
+                        emission.setValue(value);
+                    }
                 }
             }
             System.out.println(emission.toString());
@@ -53,8 +57,8 @@ public class EmissionParser {
         // htmlParser("4.A - Solid Waste Disposal");
     }
 
-    private static ArrayList<HashMap<String, String>> parseJson() {
-        ArrayList<HashMap<String, String>> jsonEmissions = new ArrayList<>();
+    private static ArrayList<HashMap<String, List<String>>> parseJson() {
+        ArrayList<HashMap<String, List<String>>> jsonEmissions = new ArrayList<>();
         try {
             // Read JSON file
             File jsonFile = new File("src/main/resources/json/GreenhouseGasEmissions.json");
@@ -65,10 +69,14 @@ public class EmissionParser {
             JsonNode emissionsNode = root.path("Emissions");
             for (JsonNode emissionNode : emissionsNode) {
                 double value = emissionNode.path("Value").asDouble();
+                String gasUnit = emissionNode.path("GasUnit").asText();
                 if (value > 0) {
                     String category = emissionNode.path("Category").asText();
-                    HashMap<String, String> emission = new HashMap<>();
-                    emission.put(category, String.valueOf(value));
+                    HashMap<String, List<String>> emission = new HashMap<>();
+                    List<String> values = new ArrayList<>();
+                    values.add(String.valueOf(value));
+                    values.add(gasUnit);
+                    emission.put(category, values);
                     jsonEmissions.add(emission);
                 }
 
