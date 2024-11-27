@@ -38,7 +38,7 @@ public class EmissionService {
 
     }
 
-     public String updateEmission(@PathVariable Long id, @RequestParam String category,
+    public String updateEmission(@PathVariable Long id, @RequestParam String category,
             @RequestParam String categoryDescription,
             @RequestParam int year,
             @RequestParam float value, @RequestParam float predictedValue, @RequestParam String scenario,
@@ -72,7 +72,12 @@ public class EmissionService {
         return "redirect:/emissions";
     }
 
-      public String populateEmissions(RedirectAttributes redirectAttributes) {
+    public String populateEmissions(RedirectAttributes redirectAttributes) {
+        List <Emission> exisitngEmissions = emissionRepository.findAll();
+        if (exisitngEmissions.size() > 0) {
+            redirectAttributes.addFlashAttribute("error", "Emissions already populated.");
+            return "redirect:/emissions";
+        }
         List<Emission> emissions = EmissionParser.parseEmissions();
         if (emissions == null) {
             redirectAttributes.addFlashAttribute("error", "Error populating emissions.");
@@ -82,5 +87,11 @@ public class EmissionService {
         redirectAttributes.addFlashAttribute("success", "Emissions populated successfully.");
         return "redirect:/emissions";
     }
-    
+
+    public String deleteAllEmissions(RedirectAttributes redirectAttributes) {
+        emissionRepository.deleteAll();
+        redirectAttributes.addFlashAttribute("success", "All emissions deleted successfully.");
+        return "redirect:/emissions";
+    }
+
 }

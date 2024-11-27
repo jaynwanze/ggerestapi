@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EmissionParser {
-
     public static List<Emission> parseEmissions() {
 
         ArrayList<Emission> emissions = parseXml();
@@ -42,7 +41,10 @@ public class EmissionParser {
                 if (category.containsKey(emission.getCategory())) {
                     List<String> categoryMap = category.get(emission.getCategory());
                     String gasUnit = categoryMap.get(1);
-                    if (gasUnit.equals(emission.getGasUnits())) {
+                    if (gasUnit.equalsIgnoreCase(emission.getGasUnits())) {
+                        System.out.println("Matched Category: " + emission.getCategory());
+                        System.out.println("Matched Gas Unit: " + emission.getGasUnits());
+
                         Float value = Float.parseFloat(categoryMap.get(0));
                         emission.setValue(value);
                     }
@@ -69,7 +71,7 @@ public class EmissionParser {
             JsonNode emissionsNode = root.path("Emissions");
             for (JsonNode emissionNode : emissionsNode) {
                 double value = emissionNode.path("Value").asDouble();
-                String gasUnit = emissionNode.path("GasUnit").asText();
+                String gasUnit = emissionNode.path("Gas Units").asText().trim();
                 if (value > 0) {
                     String category = emissionNode.path("Category").asText();
                     HashMap<String, List<String>> emission = new HashMap<>();

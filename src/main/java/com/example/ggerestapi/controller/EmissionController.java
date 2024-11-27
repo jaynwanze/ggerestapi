@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api")
 @Controller
 public class EmissionController {
-    
+
     @Autowired
     private EmissionService emissionService;
 
@@ -47,6 +47,11 @@ public class EmissionController {
     @DeleteMapping(value = "/emissions/{id}")
     public String deleteEmission(@PathVariable Long id, RedirectAttributes redirectAttributes) {
        return emissionService.deleteEmission(id, redirectAttributes);
+    }
+
+    @DeleteMapping(value = "/emissions")
+    public String deleteAllEmissions(RedirectAttributes redirectAttributes) {
+        return emissionService.deleteAllEmissions(redirectAttributes);
     }
 
     @PostMapping(value = "/emissions/populate")
