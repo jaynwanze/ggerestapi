@@ -11,9 +11,15 @@
         <h4 class="card-title mt-3">Emissions Management</h4>
         <h2 class="mb-4">Greenhouse Gas Emissions Data Ireland</h2>
         <div class="row align-items-center">
-            <div class="col">
+            <div class="col mb-4">
                 <form th:action="@{/api/emissions/populate}" method="post">
                     <button type="submit" class="btn btn-primary">Populate Database</button>
+                </form>
+                <br>
+
+                <form th:action="@{/add-emission}" method="get">
+                    <button id="addNewEmissionTab" class="btn btn-secondary btn-dark" onclick="">Add New
+                        Emission</button>
                 </form>
                 <br>
                 <form th:action="@{/api/emissions}" method="post">
@@ -22,69 +28,21 @@
                 </form>
             </div>
 
-            <div class="col">
+            <div class="col mb-3">
                 <label for="filterCategory" class="form-label">Filter by Category:</label>
                 <select id="filterCategory" class="form-select" onchange="filterEmissions()">
                     <option value="">All Categories</option>
                     <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
                 </select>
             </div>
-
         </div>
+    </div>
 
-
-        <div class=" w-50 card container mt-5 mb-3 align-items-center text-center">
-            <div id="addNewEmissionCard" class=" mb-4">
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <h5 class="card-title">Add New Emission</h5>
-                        <button id="addNewEmissionTab" class="btn btn-secondary btn-dark"
-                            onclick="handleNewEmissionsTabClicked()">Open</button>
-                    </div>
-                    <div id="addNewEmissionContent" style="display: none;">
-                        <form th:action="@{/api/emissions}" method="post">
-                            <div class="row mb-3">
-                                <input type="text" class="form-control" name="category" placeholder="Category" required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="text" class="form-control" name="categoryDescription"
-                                    placeholder="Category Description" required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="number" class="form-control" name="year" placeholder="Year" required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="number" step="0.01" class="form-control" name="value" placeholder="Value"
-                                    required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="number" step="0.01" class="form-control" name="predictedValue"
-                                    placeholder="Predicted Value" required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="text" class="form-control" name="scenario" placeholder="Scenario" required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="text" class="form-control" name="gasUnits" placeholder="Gas Units"
-                                    required>
-                            </div>
-                            <div class="row mb-3">
-                                <input type="text" class="form-control" name="nk" placeholder="NK">
-                            </div>
-                            <div class="row mb-3">
-                                <button type="submit" class="btn btn-info">Add</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <h4 class="red" th:if="${#lists.isEmpty(emissions)}">No Emissions Found!</h4>
-            <div th:if="${success}" class="alert alert-success" th:text="${success}" id="successMessage"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}" id="errorMessage"></div>
-        </div>
+    <div class=" w-50 container mt-3 align-items-center text-center">
+        <h4 class="red" th:if="${#lists.isEmpty(emissions)}">No Emissions Found!</h4>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}" id="successMessage"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}" id="errorMessage"></div>
+    </div>
     </div>
     <table th:if="${!#lists.isEmpty(emissions)}"
         class="table table-bordered  w-75  container mt-5 align-items-center text-center">
@@ -149,15 +107,6 @@
                 }
             }, 3000);
         };
-
-        function handleNewEmissionsTabClicked() {
-            const addNewEmissionCard = document.getElementById('addNewEmissionContent');
-            const addNewEmissionTab = document.getElementById('addNewEmissionTab');
-            addNewEmissionCard.style.display = addNewEmissionCard.style.display === 'none' ? '' : 'none';
-            addNewEmissionTab.textContent = addNewEmissionCard.style.display === 'none' ? 'Open' : 'Close';
-            addNewEmissionTab.classList = addNewEmissionCard.style.display === 'none' ? 'btn btn-secondary btn-dark' : 'btn btn-secondary btn-danger';
-
-        }
     </script>
 </body>
 

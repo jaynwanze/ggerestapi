@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.ggerestapi.entity.Emission;
@@ -60,7 +59,7 @@ public class PageController {
     public String profilePage(HttpSession session, RedirectAttributes redirectAttributes, Model model) {
         User authenticatedUser = (User) session.getAttribute("authenticatedUser");
         if (authenticatedUser == null) {
-            redirectAttributes.addFlashAttribute("error", "You have been logged out of your session.");
+            redirectAttributes.addFlashAttribute("error", "Logged out of your session.");
             return "redirect:/login";
         }
         model.addAttribute("authenticatedUser", authenticatedUser);
@@ -68,7 +67,6 @@ public class PageController {
         model.addAttribute("users", users);
         return "profile";
     }
-    
 
     @GetMapping("/emissions")
     public String emissionsPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
@@ -103,5 +101,15 @@ public class PageController {
         }
         model.addAttribute("emission", emission);
         return "update-emission";
+    }
+
+    @GetMapping("/add-emission")
+    public String addEmissionPage(HttpSession session, RedirectAttributes redirectAttributes) {
+        User authenticatedUser = (User) session.getAttribute("authenticatedUser");
+        if (authenticatedUser == null) {
+            redirectAttributes.addFlashAttribute("error", "Logged out of session.");
+            return "redirect:/login";
+        }
+        return "add-emission";
     }
 }

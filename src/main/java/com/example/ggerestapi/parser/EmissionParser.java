@@ -31,8 +31,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EmissionParser {
-    public static List<Emission> parseEmissions() {
 
+    public static void main(String[] args) {
+        htmlParser(null);
+    }
+
+    public static List<Emission> parseEmissions() {
         ArrayList<Emission> emissions = parseXml();
         ArrayList<HashMap<String, List<String>>> categoriesJson = parseJson();
 
@@ -56,7 +60,6 @@ public class EmissionParser {
         System.out.println("Emissions Size: " + emissions.size());
         return emissions;
 
-        // htmlParser("4.A - Solid Waste Disposal");
     }
 
     private static ArrayList<HashMap<String, List<String>>> parseJson() {
@@ -175,48 +178,25 @@ public class EmissionParser {
         String description = null;
         try {
             org.jsoup.nodes.Document doc = Jsoup.connect("https://www.ipcc-nggip.iges.or.jp/EFDB/find_ef.php").get();
+
+            System.out.println(doc);
+            // write the document content to a file
+            File file = new File("ipcc.html");
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(doc.toString().getBytes());
+            fos.close();
+
             // Get all th attrs
-            Elements table = doc.getElementsByTag("table"); // Adjust the selector to target the correct table
-            System.out.println("Table Size: " + table.size());
-            int categoryIndex = -1;
-            int descriptionIndex = -1;
+            org.jsoup.nodes.Element categoryDescTree = doc.getElementById("dipccTree0");
+            Elements categoryDescs = categoryDescTree.getElementsByTag("div");
 
-            for (org.jsoup.nodes.Element tableElem : table) {
-                if (tableElem.attr("class").equalsIgnoreCase("list")) {
+            for (org.jsoup.nodes.Element categoryDesc : categoryDescs) {
+                String categoryText = categoryDesc.text();
+                System.out.println("Category Text: " + categoryText);
+                if (categoryText.equalsIgnoreCase(category)) {
 
-                    Elements tableTrs = tableElem.getElementsByTag("tr");
-                    for (org.jsoup.nodes.Element tr : tableTrs) {
-                        Elements allThs = tr.getElementsByTag("th");
-                        int index = 0;
-                        for (org.jsoup.nodes.Element th : allThs) {
-                            if (th.text().equalsIgnoreCase("IPCC 2006")) {
-                                categoryIndex = index;
-                                System.out.println("Category Index: " + categoryIndex);
-                            } else if (th.text().equalsIgnoreCase("Description")) {
-                                descriptionIndex = index;
-                            }
-                            index++;
-                        }
-                        index++;
-                    }
-
-                    Elements allTrs = tableElem.getElementsByTag("tr");
-
-                    for (org.jsoup.nodes.Element tr : allTrs) {
-                        Elements tds = tr.getElementsByTag("td");
-                        if (categoryIndex < tds.size() && descriptionIndex < tds.size()) {
-                            String categoryText = tds.get(categoryIndex).text();
-                            if (categoryText.equalsIgnoreCase(category)) {
-                                System.out.println("Category: " + categoryText);
-                                description = tds.get(descriptionIndex).text();
-                                System.out.println("Description: " + description);
-                            }
-                            if (description != null) {
-                                break;
-                            }
-                        }
-                    }
                 }
+
             }
 
         } catch (
