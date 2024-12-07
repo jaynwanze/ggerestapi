@@ -7,7 +7,13 @@
 </head>
 
 <body>
-    <div class=" w-50 card container mt-5 align-items-center text-center">
+    <div class="container text-center mt-2">
+        <form th:action="@{/dashboard}" method="get">
+            <button type="submit" class="btn btn-primary">Home</button>
+        </form>
+    </div>
+
+    <div class=" w-50 card container mt-2 align-items-center text-center">
         <h4 class="card-title mt-3">Emissions Management</h4>
         <h2 class="mb-4">Greenhouse Gas Emissions Data Ireland</h2>
         <div class="row align-items-center">
@@ -48,9 +54,8 @@
         class="table table-bordered  w-75  container mt-5 align-items-center text-center">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Category</th>
-                <th>Description</th>
+                <th>Category Description</th>
                 <th>Gas Units</th>
                 <th>Value</th>
                 <th>Predicted Value</th>
@@ -63,13 +68,14 @@
         </thead>
         <tbody id="emissionsTable">
             <tr th:each="emission: ${emissions}" th:data-category="${emission.category}">
-                <td th:text="${emission.id}"></td>
                 <td th:text="${emission.category}"></td>
-                <td th:text="${emission.categoryDescription}"></td>
+                <td
+                    th:text="${emission.categoryDescription != null ? emission.categoryDescription : 'Category description not available'}">
+                </td>
                 <td th:text="${emission.gasUnits}"></td>
                 <td th:text="${emission.value}"></td>
                 <td th:text="${emission.predictedValue}"></td>
-                <td th:text="${emission.nk}"></td>
+                <td th:text="${emission.nk != null ? emission.nk : 'NK not available'}"></td>
                 <td th:text="${emission.scenario}"></td>
                 <td th:text="${emission.year}"></td>
                 <td th:text="${emission.country}"></td>

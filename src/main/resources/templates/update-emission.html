@@ -7,10 +7,10 @@
 </head>
 
 <body>
-    <div class=" w-50 card container mt-5 align-items-center text-center">
+    <div class=" w-50 card container mt-5 align-items-center text-center">    
         <div class="card-body">
             <div class="row mb-3">
-                <h5 class="card-title">Update Existing Emission: <span th:text="${emission.id}" /></h5>
+                <h5 class="card-title">Update Existing Emission ID: <span th:text="${emission.id}" /></h5>
             </div>
             <form class="mb-3" th:action="@{/api/emissions/{id}(id=${emission.id})}" method="post">
                 <input type="hidden" name="_method" value="put" />

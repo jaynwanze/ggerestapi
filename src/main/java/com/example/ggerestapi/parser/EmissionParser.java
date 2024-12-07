@@ -24,23 +24,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
 import com.example.ggerestapi.entity.Emission;
-import com.example.ggerestapi.repository.EmissionRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class EmissionParser {
-
-    public static void main(String[] args) {
-        htmlParser(null);
-    }
-
     public static List<Emission> parseEmissions() {
         ArrayList<Emission> emissions = parseXml();
         ArrayList<HashMap<String, List<String>>> categoriesJson = parseJson();
+        ArrayList<HashMap<String, String>> categoryDescriptions = htmlParser();
 
         for (Emission emission : emissions) {
+            // Loop through categories and update value if found
             for (HashMap<String, List<String>> category : categoriesJson) {
                 if (category.containsKey(emission.getCategory())) {
                     List<String> categoryMap = category.get(emission.getCategory());
@@ -52,6 +46,13 @@ public class EmissionParser {
                         Float value = Float.parseFloat(categoryMap.get(0));
                         emission.setValue(value);
                     }
+                }
+            }
+            // Loop through category descriptions and update category if found
+            for (HashMap<String, String> categoryDesc : categoryDescriptions) {
+                if (categoryDesc.containsKey(emission.getCategory())) {
+                    String description = categoryDesc.get(emission.getCategory());
+                    emission.setCategoryDescription(description);
                 }
             }
             System.out.println(emission.toString());
@@ -103,12 +104,14 @@ public class EmissionParser {
             Document doc = dBuilder.parse(xmlFile);
             String country = null;
 
+            // Get all row and ms elements
             NodeList rowList = doc.getElementsByTagName("Row");
             System.out.println("Number of 'Row' elements: " + rowList.getLength());
 
             NodeList msList = doc.getElementsByTagName("MS");
             System.out.println("Number of 'MS' elements: " + msList.getLength());
 
+            // Extract country
             for (int index = 0; index < msList.getLength(); index++) {
                 Node ms = msList.item(index);
                 if (ms != null && ms.getNodeType() == Node.ELEMENT_NODE) {
@@ -122,6 +125,7 @@ public class EmissionParser {
                 }
             }
 
+            // Extract emmsions data
             for (int i = 0; i < rowList.getLength(); i++) {
                 Node row = rowList.item(i);
 
@@ -174,37 +178,53 @@ public class EmissionParser {
         return categories;
     }
 
-    private static String htmlParser(String category) {
-        String description = null;
+    private static ArrayList<HashMap<String, String>> htmlParser() {
+        ArrayList<HashMap<String, String>> categoryDescriptions = new ArrayList<>();
         try {
+            // Connect to the webpage
             org.jsoup.nodes.Document doc = Jsoup.connect("https://www.ipcc-nggip.iges.or.jp/EFDB/find_ef.php").get();
 
-            System.out.println(doc);
-            // write the document content to a file
-            File file = new File("ipcc.html");
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(doc.toString().getBytes());
-            fos.close();
+            // Extract all script tags
+            Elements scriptTags = doc.select("script");
 
-            // Get all th attrs
-            org.jsoup.nodes.Element categoryDescTree = doc.getElementById("dipccTree0");
-            Elements categoryDescs = categoryDescTree.getElementsByTag("div");
+            // Extract category descriptions
+            for (org.jsoup.nodes.Element script : scriptTags) {
+                if (script.data().contains("ipccTree.add")) {
+                    String scriptContent = script.data();
 
-            for (org.jsoup.nodes.Element categoryDesc : categoryDescs) {
-                String categoryText = categoryDesc.text();
-                System.out.println("Category Text: " + categoryText);
-                if (categoryText.equalsIgnoreCase(category)) {
+                    String[] lines = scriptContent.split(";");
+                    for (String line : lines) {
+                        if (line.contains("ipccTree.add")) {
+                            // Extract category description
+                            String[] parts = line.split(",");
+                            if (parts.length >= 3) {
+                                // remove unwanted characters
+                                String categoryDescription = parts[2].trim();
+                                categoryDescription = categoryDescription.replaceAll("'", "").replaceAll("<[^>]*>", "")
+                                        .trim();
+                                if (categoryDescription.contains(" - ")) {
+                                    String[] mainParts = categoryDescription.split(" - ");
+                                    if (mainParts.length >= 2) {
+                                        String category = mainParts[0].trim() + "."; 
+                                        String categoryDesc = mainParts[1].trim();
+                                        // add to map
+                                        HashMap<String, String> map = new HashMap<>();
+                                        map.put(category, categoryDesc);
+                                        categoryDescriptions.add(map);
+                                        System.out.println("Category: " + category + " Description: " + categoryDesc);
+                                    }
+                                }
+                            }
+                        }
 
+                    }
                 }
-
             }
 
-        } catch (
-
-        IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return description;
+        return categoryDescriptions;
     }
 
     // Utility method to get element value safely
