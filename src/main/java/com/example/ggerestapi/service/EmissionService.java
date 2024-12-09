@@ -24,12 +24,13 @@ public class EmissionService {
             @RequestParam String gasUnits, @RequestParam String nk, RedirectAttributes redirectAttributes) {
         Emission emission = new Emission();
         emission.setCategory(category);
-        emission.setCategoryDescription(categoryDescription);
+        emission.setCategoryDescription(
+                categoryDescription.isEmpty() || categoryDescription == null ? null : categoryDescription);
         emission.setScenario(scenario);
         emission.setValue(value);
         emission.setYear(year);
         emission.setGasUnits(gasUnits);
-        emission.setNk(nk);
+        emission.setNk(nk.isEmpty() || nk == null ? null : nk);
         emission.setPredictedValue(predictedValue);
         emission.setCountry("Ireland");
         emissionRepository.save(emission);
@@ -49,12 +50,13 @@ public class EmissionService {
             return "redirect:/emissions";
         }
         emission.setCategory(category);
-        emission.setCategoryDescription(categoryDescription);
+        emission.setCategoryDescription(
+                categoryDescription.isEmpty() || categoryDescription == null ? null : categoryDescription);
         emission.setScenario(scenario);
         emission.setValue(value);
         emission.setYear(year);
         emission.setGasUnits(gasUnits);
-        emission.setNk(nk);
+        emission.setNk(nk.isEmpty() || nk == null ? null : nk);
         emission.setPredictedValue(predictedValue);
         emissionRepository.save(emission);
         redirectAttributes.addFlashAttribute("success", "Emission updated successfully.");
@@ -73,7 +75,7 @@ public class EmissionService {
     }
 
     public String populateEmissions(RedirectAttributes redirectAttributes) {
-        List <Emission> exisitngEmissions = emissionRepository.findAll();
+        List<Emission> exisitngEmissions = emissionRepository.findAll();
         if (exisitngEmissions.size() > 0) {
             redirectAttributes.addFlashAttribute("error", "Emissions already populated.");
             return "redirect:/emissions";
