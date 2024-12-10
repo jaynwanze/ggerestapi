@@ -20,14 +20,15 @@ public class Emission {
     private int year;
     private String gasUnits;
     private String nk;
-    private float value; 
-    private float predictedValue; 
+    private float value;
+    private float predictedValue;
     private String country;
 
     public Emission() {
     }
 
-    public Emission(String category, String categoryDescription, String scenario, int year, String gasUnits, String nk, float value, float predictedValue, String country) {
+    public Emission(String category, String categoryDescription, String scenario, int year, String gasUnits, String nk,
+            float value, float predictedValue, String country) {
         this.category = category;
         this.categoryDescription = categoryDescription;
         this.scenario = scenario;
@@ -118,7 +119,6 @@ public class Emission {
     public void setCountry(String country) {
         this.country = country;
     }
-    
 
     @Override
     public String toString() {

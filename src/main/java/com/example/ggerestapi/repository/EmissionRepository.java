@@ -10,4 +10,8 @@ import com.example.ggerestapi.entity.Emission;
 public interface EmissionRepository extends JpaRepository<Emission, Long> {
     @Query("SELECT DISTINCT e.category FROM Emission e")
     List<String> findAllCategories();
+
+    @Query("SELECT e FROM Emission e WHERE e.category = ?1")
+    List<Emission> findByCategory(String category);
+
 }

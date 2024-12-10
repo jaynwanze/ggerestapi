@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Service
@@ -15,7 +17,8 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    public String register(String email, String name, String password, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String register(String email, String name, String password, HttpSession session,
+            RedirectAttributes redirectAttributes) {
         User existingUser = userRepository.findByEmail(email);
         if (existingUser != null) {
             redirectAttributes.addFlashAttribute("error", "User already exists.");
@@ -49,5 +52,46 @@ public class AuthService {
         session.setAttribute("authenticatedUser", authenticatedUser);
         return "redirect:/dashboard";
 
+    }
+
+    public String jsonLogin(String email, String password, HttpSession session) {
+        User existingUser = userRepository.findByEmail(email);
+        if (existingUser == null) {
+            return "User not found";
+        }
+        if (!existingUser.getPassword().equals(password)) {
+            return "Password is incorrect";
+        }
+        if (email == null || password == null) {
+            return "Email or password is null";
+        }
+        User currentUser = (User) session.getAttribute("authenticatedUser");
+
+        if (currentUser != null && existingUser.getId() == currentUser.getId()) {
+            return "User is already logged in";
+        }
+        session.setAttribute("authenticatedUser", existingUser);
+        return "User authenticated and now logged in";
+    }
+
+    public String jsonRegister(@RequestBody User user, HttpSession session) {
+        User existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser != null) {
+            return "User already exists";
+        }
+        if (user.getEmail() == null || user.getName() == null || user.getPassword() == null) {
+            return "User information is incomplete";
+        }
+        session.setAttribute("authenticatedUser", existingUser);
+        userRepository.save(user);
+        return "User created successfully and now logged in";
+    }
+
+    public String jsonLogout(HttpSession session) {
+        if (session.getAttribute("authenticatedUser") == null) {
+            return "User is not authenticated and cannot be logged out";
+        }
+        session.removeAttribute("authenticatedUser");
+        return "User logged out";
     }
 }

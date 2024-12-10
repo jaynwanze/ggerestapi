@@ -76,7 +76,7 @@ public class EmissionService {
 
     public String populateEmissions(RedirectAttributes redirectAttributes) {
         List<Emission> exisitngEmissions = emissionRepository.findAll();
-        if (exisitngEmissions.size() > 0) {
+        if (exisitngEmissions.size() >= 242) {
             redirectAttributes.addFlashAttribute("error", "Emissions already populated.");
             return "redirect:/emissions";
         }
